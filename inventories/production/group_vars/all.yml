@@ -1,0 +1,6 @@
+---
+deploy_user: deployer
+infra_dir: /opt/infra
+docker_network: web-network
+# Set this to a public SSH key to enable access as deploy_user.
+deploy_user_ssh_public_key: ""

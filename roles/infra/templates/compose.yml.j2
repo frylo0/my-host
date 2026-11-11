@@ -1,0 +1,44 @@
+services:
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:alpine
+    container_name: caddy-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - {{ docker_network }}
+
+  mysql:
+    image: mariadb:10.11
+    container_name: shared-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - {{ docker_network }}
+
+  mongo:
+    image: mongo:6.0
+    container_name: shared-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - {{ docker_network }}
+
+volumes:
+  caddy_data:
+  caddy_config:
+  mysql_data:
+  mongo_data:
+
+networks:
+  {{ docker_network }}:
+    external: true

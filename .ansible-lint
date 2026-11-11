@@ -1,0 +1,6 @@
+---
+profile: basic
+exclude_paths:
+  - .ansible/
+  - tasks/
+  - inventories/production/group_vars/vault.yml

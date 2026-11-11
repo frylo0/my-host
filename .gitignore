@@ -1,2 +1,8 @@
 node_modules/
-/tasks/
+.ansible/
+*.retry
+
+# Ansible secrets and local credentials
+inventories/*/group_vars/vault.yml
+*.vault
+.vault_pass

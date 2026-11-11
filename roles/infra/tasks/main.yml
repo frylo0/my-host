@@ -1,0 +1,55 @@
+---
+- name: Install Docker using the official installation script
+  ansible.builtin.shell: "curl -fsSL https://get.docker.com | sh"
+  # noqa: command-instead-of-module — Docker's official installer is a shell script.
+  args:
+    creates: /usr/bin/docker
+
+- name: Ensure deploy user exists and belongs to docker group
+  ansible.builtin.user:
+    name: "{{ deploy_user }}"
+    shell: /bin/bash
+    groups: docker
+    append: true
+    create_home: true
+
+- name: Ensure deploy user's SSH directory exists
+  ansible.builtin.file:
+    path: "/home/{{ deploy_user }}/.ssh"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: "0700"
+
+- name: Install optional deploy user SSH public key
+  ansible.posix.authorized_key:
+    user: "{{ deploy_user }}"
+    key: "{{ deploy_user_ssh_public_key }}"
+    state: present
+  when: deploy_user_ssh_public_key | length > 0
+
+- name: Create external Docker network
+  community.docker.docker_network:
+    name: "{{ docker_network }}"
+    state: present
+
+- name: Create infrastructure directory
+  ansible.builtin.file:
+    path: "{{ infra_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Render infrastructure Compose file
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ infra_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Start infrastructure services
+  community.docker.docker_compose_v2:
+    project_src: "{{ infra_dir }}"
+    state: present

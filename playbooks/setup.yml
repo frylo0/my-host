@@ -1,0 +1,7 @@
+---
+- name: Set up production VPS infrastructure
+  hosts: vps
+  become: true
+
+  roles:
+    - infra
