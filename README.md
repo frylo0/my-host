@@ -113,13 +113,18 @@ networks:
     external: true
 ```
 
-Next.js Compose example (the app image must run its production server on port 3000):
+Next.js Compose example (the app image must run its production server on port 3000). MariaDB and MongoDB are already running as shared infrastructure services on `web-network`; do not add duplicate database services to the app's Compose file. Connect to them by their shared container names, `shared-mysql` and `shared-mongo`. Set the database credentials in the environment where you run `make deploy` (or in a local `.env` file that is not committed):
 
 ```yaml
 services:
   app:
     build: .
     restart: unless-stopped
+    environment:
+      # MariaDB is shared infrastructure (service name: shared-mysql).
+      DATABASE_URL: "mysql://my_app:${MYSQL_PASSWORD}@shared-mysql:3306/my_app"
+      # MongoDB is shared infrastructure (service name: shared-mongo).
+      MONGODB_URI: "mongodb://shared-mongo:27017/my_app"
     networks: [web-network]
     labels:
       caddy: next.example.com
@@ -128,6 +133,8 @@ networks:
   web-network:
     external: true
 ```
+
+Create the `my_app` database and a least-privilege MariaDB user before using `DATABASE_URL`; the infrastructure only provisions the shared MariaDB server and does not create per-app databases or users. `MYSQL_PASSWORD` must be set for Compose interpolation, and the application must read whichever connection variable(s) it uses. Omit either variable if the app does not use that database. Database credentials and data are shared infrastructure concerns: do not commit secrets, expose database ports publicly, or assume the databases are isolated per app.
 
 ntfy Compose example using the public upstream image and persistent cache:
 
