@@ -3,4 +3,4 @@ deploy_user: deployer
 infra_dir: /opt/infra
 docker_network: web-network
 # Set this to a public SSH key to enable access as deploy_user.
-deploy_user_ssh_public_key: ""
+deploy_user_ssh_public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOyTSzZYTp+MFydoGY7nL4u5mBIw8KZGqLT2yUb1NKwE my-vps-deployer"

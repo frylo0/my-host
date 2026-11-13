@@ -1,0 +1,11 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+
+    "permissions": [
+        { "effect": "deny", "resource": "*", "action": "external_directory" },
+        { "effect": "allow", "resource": "~/.ssh/config", "action": "external_directory" },
+        { "effect": "allow", "resource": "~/.config/opencode/*", "action": "external_directory" },
+        { "effect": "deny", "resource": "~/.config/opencode*secrets", "action": "external_directory" },
+        { "effect": "allow", "resource": "/tmp/*", "action": "external_directory" },
+    ],
+}

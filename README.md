@@ -47,7 +47,11 @@ cd my-host
 make deps
 ```
 
-Make sure your SSH public key is authorized for the initial server login (the inventory defaults to `root`). Review `inventories/production/hosts.yml` and `inventories/production/group_vars/all.yml`. Set `deploy_user_ssh_public_key` to your public key so the playbook enables SSH access for the `deployer` account. Keep the private key only on your machine.
+Generate SSH keypairs: `ansroot` and `deployer`, install the ansroot public key on the VPS, and write the deployer public key into the inventory settings:
+
+```sh
+make ssh-keys VPS_HOST=203.0.113.42
+```
 
 
 ### 2. Deploy the infrastructure
@@ -56,7 +60,7 @@ Create the local vault file, edit it to set a unique strong MariaDB root passwor
 
 ```sh
 make vault-init
-$EDITOR inventories/production/group_vars/vault.yml
+vi inventories/production/group_vars/all/vault.yml
 make vault-encrypt
 ```
 
@@ -66,7 +70,7 @@ Provision the VPS by passing its real IP address to Make. Example:
 make setup VPS_HOST=203.0.113.42
 ```
 
-`203.0.113.42` is a documentation-only example address; replace it with your VPS IP. Make invokes the playbook using `--ask-vault-pass`. The target expects the initial SSH user in the production inventory to have root or sudo access. The playbook installs Docker using Docker's official install script, creates the `deployer` user and `web-network`, and starts the shared services. Do not expose database ports publicly; connect app containers to `web-network`.
+> `203.0.113.42` is a documentation-only example address; replace it with your VPS IPO.
 
 
 ### 3. Deploy applications to the infrastructure
